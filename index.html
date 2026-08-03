@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>토다기 (TODAGI) - 스마트 조끼 및 디바이스 제어</title>
-    <!-- Chart.js 라이브러리 -->
+    <title>토다기 (TODAGI) - 스마트 조끼 제어 앱</title>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -16,12 +16,13 @@
             --accent-blue: #38bdf8;
             --accent-green: #4ade80;
             --accent-orange: #fb923c;
+            --accent-purple: #c084fc;
             --text-light: #f8fafc;
             --text-gray: #94a3b8;
             --nav-bg: #1c253a;
             
-            --safe-area-inset-top: 40px;
-            --safe-area-inset-bottom: 25px;
+            --safe-area-top: 40px;
+            --safe-area-bottom: 25px;
         }
 
         * {
@@ -44,61 +45,48 @@
             overflow-x: hidden;
         }
 
-        /* 메인 상단 디바이스 전환 스위처 */
+        /* 디바이스 전환 스위처 */
         .device-selector {
             display: flex;
             gap: 12px;
             background-color: rgba(255, 255, 255, 0.05);
             padding: 6px;
             border-radius: 30px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .device-btn {
-            padding: 10px 24px;
+            padding: 8px 20px;
             border-radius: 20px;
             border: none;
             background: transparent;
             color: var(--text-gray);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.3s ease;
         }
 
         .device-btn.active {
             background-color: var(--accent-blue);
             color: #0f172a;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
-        /* 디바이스 뷰 Wrapper */
-        .viewport-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-
-        .device-view {
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .device-view.active {
-            display: flex;
-        }
+        .viewport-container { display: flex; justify-content: center; align-items: center; width: 100%; }
+        .device-view { display: none; animation: fadeIn 0.3s ease-out; }
+        .device-view.active { display: flex; }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ================= 1. 모바일 폰 프레임 ================= */
+        /* 1. 휴대폰 프레임 */
         .phone-frame {
             width: 375px;
             height: 750px;
@@ -114,97 +102,49 @@
 
         .phone-notch {
             position: absolute;
-            top: 0;
-            left: 50%;
+            top: 0; left: 50%;
             transform: translateX(-50%);
-            width: 130px;
-            height: 22px;
+            width: 130px; height: 22px;
             background-color: #1a202c;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
             z-index: 100;
         }
 
-        /* ================= 2. 스마트 워치 프레임 ================= */
+        /* 2. 스마트워치 프레임 */
         .watch-frame {
-            width: 320px;
-            height: 390px;
+            width: 310px; height: 380px;
             background: linear-gradient(145deg, #1e293b, #0f172a);
             border: 12px solid #334155;
             border-radius: 64px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(0,0,0,0.5);
-            position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9);
             padding: 25px 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
             text-align: center;
         }
 
-        .watch-screen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .watch-title {
-            font-size: 0.75rem;
-            color: var(--accent-blue);
-            font-weight: bold;
-            letter-spacing: 1.5px;
-            margin-top: 5px;
-        }
-
-        .watch-metric {
-            background: rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .watch-val {
-            font-size: 1.8rem;
-            font-weight: 800;
-            line-height: 1.1;
-        }
-
-        .watch-unit {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-        }
-
-        /* 공통 앱 레이아웃 */
         .app-statusbar {
-            height: var(--safe-area-inset-top);
+            height: var(--safe-area-top);
             padding: 0 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            font-weight: 600;
-            z-index: 90;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75rem; font-weight: 600; z-index: 90;
         }
 
         .app-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 18px;
-            padding-bottom: calc(65px + var(--safe-area-inset-bottom));
+            flex: 1; overflow-y: auto;
+            padding: 10px 16px;
+            padding-bottom: calc(65px + var(--safe-area-bottom));
         }
-
         .app-content::-webkit-scrollbar { display: none; }
 
-        .page-header { margin-bottom: 16px; }
-        .page-header h1 { font-size: 1.4rem; font-weight: 800; }
-        .page-header p { color: var(--text-gray); font-size: 0.85rem; }
+        .page-header { margin-bottom: 14px; }
+        .page-header h1 { font-size: 1.35rem; font-weight: 800; }
+        .page-header p { color: var(--text-gray); font-size: 0.8rem; margin-top: 2px; }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 16px;
-            padding: 14px 16px;
+            padding: 14px;
             margin-bottom: 12px;
             border: 1px solid #2d3a52;
         }
@@ -212,78 +152,76 @@
         .page { display: none; }
         .page.active { display: block; }
 
-        /* 상태 현황 */
+        /* 실시간 그리드 */
         .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .status-item { text-align: center; }
         .status-label { font-size: 0.75rem; color: var(--text-gray); }
         .status-value { font-size: 1.6rem; font-weight: bold; margin: 2px 0; }
         
         .vest-status-card { display: flex; align-items: center; justify-content: space-between; }
-        .vest-status-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .vest-status-badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
         .status-idle { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
         .status-active { background-color: rgba(251, 146, 60, 0.2); color: var(--accent-orange); animation: pulse 1.5s infinite; }
 
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
-        /* 설정 스위치/슬라이더 */
-        .setting-item { margin-bottom: 14px; }
-        .setting-label { font-size: 0.85rem; color: var(--text-gray); display: flex; justify-content: space-between; margin-bottom: 6px; }
+        /* 주간 요약 수치 (2번 기능) */
+        .weekly-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; text-align: center; }
+        .weekly-num { font-size: 1.1rem; font-weight: bold; color: var(--accent-blue); }
+        .weekly-text { font-size: 0.65rem; color: var(--text-gray); }
+
+        /* 메모 입력란 (3번 기능) */
+        .memo-input-box {
+            display: flex; gap: 6px; margin-top: 10px;
+        }
+        .memo-input {
+            flex: 1; background: rgba(0,0,0,0.2); border: 1px solid #334155;
+            border-radius: 8px; padding: 8px; color: white; font-size: 0.75rem;
+        }
+        .memo-btn {
+            background: var(--accent-blue); border: none; border-radius: 8px;
+            padding: 0 12px; color: #0f172a; font-weight: bold; font-size: 0.75rem; cursor: pointer;
+        }
+        .memo-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .memo-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; font-size: 0.75rem; line-height: 1.3; }
+
+        /* 시간대별 위험 통계 (1번 기능) */
+        .time-pattern-card {
+            background: linear-gradient(135deg, rgba(192, 132, 252, 0.1), rgba(30, 41, 59, 1));
+            border-left: 4px solid var(--accent-purple);
+        }
+
+        /* 설정 슬라이더 */
+        .setting-item { margin-bottom: 12px; }
+        .setting-label { font-size: 0.8rem; color: var(--text-gray); display: flex; justify-content: space-between; margin-bottom: 4px; }
         .threshold-val { color: var(--accent-blue); font-weight: bold; }
-        input[type="range"] { width: 100%; accent-color: var(--accent-blue); height: 6px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-blue); height: 5px; }
 
-        /* 자폐인 솔루션 카드 */
-        .solution-item {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .solution-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .solution-icon {
-            width: 36px; height: 36px;
-            border-radius: 10px;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-blue);
-            display: flex; align-items: center; justify-content: center;
-            flex-shrink: 0;
-        }
-        .solution-title { font-size: 0.85rem; font-weight: bold; margin-bottom: 2px; }
-        .solution-desc { font-size: 0.75rem; color: var(--text-gray); line-height: 1.4; }
-
-        /* 하단 네비게이션 바 */
+        /* 하단 네비게이션 */
         .app-navbar {
-            position: absolute;
-            bottom: 0; left: 0; width: 100%;
-            height: calc(58px + var(--safe-area-inset-bottom));
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            height: calc(56px + var(--safe-area-bottom));
             background-color: var(--nav-bg);
             border-top: 1px solid #2d3a52;
-            display: flex;
-            justify-content: space-around;
-            padding-top: 8px;
-            padding-bottom: var(--safe-area-inset-bottom);
+            display: flex; justify-content: space-around;
+            padding-top: 8px; padding-bottom: var(--safe-area-bottom);
             z-index: 100;
         }
 
         .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-gray);
-            font-size: 0.65rem;
-            font-weight: 600;
-            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-gray); font-size: 0.65rem; font-weight: 600; cursor: pointer;
         }
-
-        .nav-item .material-icons { font-size: 1.4rem; margin-bottom: 2px; }
+        .nav-item .material-icons { font-size: 1.3rem; margin-bottom: 2px; }
         .nav-item.active { color: var(--accent-blue); }
 
-        .chart-container { height: 160px; position: relative; }
+        .chart-container { height: 140px; position: relative; }
+        .mini-chart-container { height: 70px; position: relative; margin-top: 8px; }
     </style>
 </head>
 <body>
 
-    <!-- 디바이스 화면 선택기 -->
+    <!-- 디바이스 화면 선택 탭 -->
     <div class="device-selector">
         <button class="device-btn active" onclick="switchDeviceView('phone')">
             <span class="material-icons">smartphone</span>
@@ -306,31 +244,31 @@
                 <div class="app-statusbar">
                     <span class="app-time-text">00:00</span>
                     <div style="display:flex; gap: 4px; align-items: center;">
-                        <span class="material-icons" style="font-size:13px; color: var(--accent-green);">bluetooth_connected</span>
-                        <span class="material-icons" style="font-size:13px;">signal_cellular_alt</span>
-                        <span class="material-icons" style="font-size:14px;">battery_full</span>
+                        <span class="material-icons" style="font-size:12px; color: var(--accent-green);">bluetooth_connected</span>
+                        <span class="material-icons" style="font-size:12px;">signal_cellular_alt</span>
+                        <span class="material-icons" style="font-size:13px;">battery_full</span>
                     </div>
                 </div>
 
                 <div class="app-content">
 
-                    <!-- [실시간] -->
+                    <!-- TAB 1: 실시간 모니터링 -->
                     <div id="page-home" class="page active">
                         <div class="page-header">
                             <h1>TODAGI</h1>
-                            <p>워치 센서 실시간 생체 모니터링</p>
+                            <p>실시간 바이오 신호 및 상태</p>
                         </div>
 
                         <div class="card status-grid">
                             <div class="status-item">
                                 <div class="status-label">스트레스 지수</div>
                                 <div class="status-value realtime-stress-val" style="color: var(--accent-orange);">--</div>
-                                <div style="font-size:0.7rem; color:var(--text-gray);">점</div>
+                                <div style="font-size:0.65rem; color:var(--text-gray);">점</div>
                             </div>
                             <div class="status-item">
                                 <div class="status-label">혈중 산소 (SpO2)</div>
                                 <div class="status-value realtime-spo2-val" style="color: var(--accent-blue);">--</div>
-                                <div style="font-size:0.7rem; color:var(--text-gray);">%</div>
+                                <div style="font-size:0.65rem; color:var(--text-gray);">%</div>
                             </div>
                         </div>
 
@@ -347,64 +285,101 @@
                         </div>
                     </div>
 
-                    <!-- [기록] -->
+                    <!-- TAB 2: 기록 (그래프 + 2번 주간 요약 + 3번 보호자 메모) -->
                     <div id="page-history" class="page">
                         <div class="page-header">
-                            <h1>착용 및 작동 기록</h1>
-                            <p>실시간 바이오 데이터 추이</p>
+                            <h1>기록 및 통계</h1>
+                            <p>실시간 그래프 및 작동 내역 관리</p>
                         </div>
+                        
+                        <!-- 메인 바이오 그래프 -->
                         <div class="card">
-                            <div class="status-label" style="margin-bottom:8px;">최근 1시간 스트레스/산소 변화</div>
+                            <div class="status-label" style="margin-bottom:6px;">실시간 스트레스/산소 추이</div>
                             <div class="chart-container">
                                 <canvas id="appHistoryChart"></canvas>
                             </div>
                         </div>
+
+                        <!-- 2번 기능: 주간 가동 통계 요약 -->
                         <div class="card">
-                            <div class="status-label" style="margin-bottom:6px;">최근 자동 가동 내역</div>
-                            <div style="font-size:0.8rem; color:var(--text-light); line-height:1.5;">
-                                • 14:20 - 스트레스 (82) 상승으로 가동<br>
-                                • 11:05 - 스트레스 (78) 상승으로 가동
+                            <div class="status-label">주간 조끼 가동 요약 (최근 7일)</div>
+                            <div class="weekly-summary-grid">
+                                <div>
+                                    <div class="weekly-num">6회</div>
+                                    <div class="weekly-text">총 가동 횟수</div>
+                                </div>
+                                <div>
+                                    <div class="weekly-num">2분 10초</div>
+                                    <div class="weekly-text">평균 진정 시간</div>
+                                </div>
+                                <div>
+                                    <div class="weekly-num" style="color:var(--accent-green);">92%</div>
+                                    <div class="weekly-text">진정 완화율</div>
+                                </div>
+                            </div>
+                            <div class="mini-chart-container">
+                                <canvas id="weeklyMiniChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- 3번 기능: 보호자 상황 메모 일기 -->
+                        <div class="card">
+                            <div class="status-label">작동 당시 상황 메모 (보호자 작성)</div>
+                            <div class="memo-input-box">
+                                <input type="text" id="memoInput" class="memo-input" placeholder="예: 시끄러운 마트 방문 후 스트레스 자극">
+                                <button class="memo-btn" onclick="addMemo()">저장</button>
+                            </div>
+                            <div class="memo-list" id="memoList">
+                                <div class="memo-item">
+                                    <span style="color:var(--accent-blue); font-weight:bold;">14:20</span> - 하교 길 갑작스러운 오토바이 경적 소리에 자극받음
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- [솔루션] (신규 추가된 항목!) -->
+                    <!-- TAB 3: 분석 및 솔루션 (1번 기능 + 감각 가이드) -->
                     <div id="page-solution" class="page">
                         <div class="page-header">
-                            <h1>맞춤형 케어 솔루션</h1>
-                            <p>자폐인을 위한 감각 과부하 완화 가이드</p>
+                            <h1>패턴 분석 & 솔루션</h1>
+                            <p>생체 데이터 기반 맞춤 케어</p>
                         </div>
 
+                        <!-- 1번 기능: 시간대별 위험 패턴 분석 -->
+                        <div class="card time-pattern-card">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                                <span class="material-icons" style="color:var(--accent-purple); font-size:1.1rem;">schedule</span>
+                                <span style="font-size:0.85rem; font-weight:bold; color:var(--accent-purple);">시간대별 위험 패턴 분석</span>
+                            </div>
+                            <div style="font-size:0.75rem; color:var(--text-light); line-height:1.4;">
+                                📊 분석 결과, <strong style="color:var(--accent-orange);">오후 14:00 ~ 16:00 사이</strong>에 감각 과부하 스트레스 발생 확률이 <strong style="color:var(--accent-orange);">75%</strong>로 가장 높습니다. 해당 시간대 외출 시 주의가 필요합니다.
+                            </div>
+                        </div>
+
+                        <!-- 맞춤형 가이드 -->
                         <div class="card">
-                            <div class="solution-item">
-                                <div class="solution-icon"><span class="material-icons">graphic_eq</span></div>
-                                <div>
-                                    <div class="solution-title">청각 자극 차단 권장</div>
-                                    <div class="solution-desc">오후 2시경 급격한 스트레스 상승 패턴이 감지되었습니다. 노이즈 캔슬링 헤드셋을 준비해 주세요.</div>
+                            <div style="font-size:0.8rem; font-weight:bold; margin-bottom:10px;">자폐인을 위한 추천 조치</div>
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <span class="material-icons" style="color:var(--accent-blue);">graphic_eq</span>
+                                    <div style="font-size:0.75rem; color:var(--text-gray);">
+                                        <strong style="color:white;">청각 차단 조치:</strong> 오후 2시경 외출 시 노이즈 캔슬링 헤드셋을 착용시켜 주세요.
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="solution-item">
-                                <div class="solution-icon"><span class="material-icons">air</span></div>
-                                <div>
-                                    <div class="solution-title">딥 프레셔 자극 효과</div>
-                                    <div class="solution-desc">조끼 압박 가동 후 평균 2분 30초 내에 심박수와 스트레스가 안정 수치(60 이하)로 회복되었습니다.</div>
-                                </div>
-                            </div>
-                            <div class="solution-item">
-                                <div class="solution-icon"><span class="material-icons">bedtime</span></div>
-                                <div>
-                                    <div class="solution-title">휴식 공간 확보 솔루션</div>
-                                    <div class="solution-desc">감각 과부하 징후 발동 시 조명이 어둡고 조용한 공간으로 이동을 유도해 주세요.</div>
+                                <div style="display:flex; gap:10px; align-items:center;">
+                                    <span class="material-icons" style="color:var(--accent-green);">air</span>
+                                    <div style="font-size:0.75rem; color:var(--text-gray);">
+                                        <strong style="color:white;">압박 모드 유지:</strong> 가동 시작 후 약 2분 내로 안정 수치에 도달하므로 조끼 자극을 유지해 주세요.
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- [설정] -->
+                    <!-- TAB 4: 자동 가동 설정 -->
                     <div id="page-settings" class="page">
                         <div class="page-header">
                             <h1>자동 가동 설정</h1>
-                            <p>스마트 조끼 동작 조건 지정</p>
+                            <p>조끼 반응 임계 수치 제어</p>
                         </div>
 
                         <div class="card">
@@ -428,19 +403,19 @@
 
                 </div>
 
-                <!-- 4개 항목으로 확장된 네비게이션 바 -->
+                <!-- 하단 네비게이션 -->
                 <div class="app-navbar">
                     <div class="nav-item active" onclick="changePage('home')">
                         <span class="material-icons">sensors</span>
                         <span>실시간</span>
                     </div>
                     <div class="nav-item" onclick="changePage('history')">
-                        <span class="material-icons">history</span>
+                        <span class="material-icons">equalizer</span>
                         <span>기록</span>
                     </div>
                     <div class="nav-item" onclick="changePage('solution')">
-                        <span class="material-icons">psychology</span>
-                        <span>솔루션</span>
+                        <span class="material-icons">insights</span>
+                        <span>분석</span>
                     </div>
                     <div class="nav-item" onclick="changePage('settings')">
                         <span class="material-icons">tune</span>
@@ -453,22 +428,22 @@
         <!-- 2. 스마트 워치 독립 화면 -->
         <div id="view-watch" class="device-view">
             <div class="watch-frame">
-                <div class="watch-screen">
-                    <div class="watch-title">TODAGI WATCH</div>
+                <div style="width:100%; height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+                    <div style="font-size:0.75rem; color:var(--accent-blue); font-weight:bold; letter-spacing:1px;">TODAGI WATCH</div>
                     
                     <div>
                         <div style="font-size:0.7rem; color:var(--text-gray);">실시간 스트레스</div>
-                        <div class="watch-val realtime-stress-val" style="color:var(--accent-orange);">--</div>
+                        <div style="font-size:1.8rem; font-weight:800; color:var(--accent-orange);" class="realtime-stress-val">--</div>
                     </div>
 
                     <div style="display:flex; gap:8px;">
-                        <div class="watch-metric" style="flex:1;">
-                            <div class="watch-unit">SpO2</div>
-                            <div style="font-weight:bold; font-size:1.1rem; color:var(--accent-blue);" class="realtime-spo2-val">--</div>
+                        <div style="flex:1; background:rgba(255,255,255,0.05); padding:8px; border-radius:12px;">
+                            <div style="font-size:0.65rem; color:var(--text-gray);">SpO2</div>
+                            <div style="font-weight:bold; font-size:1rem; color:var(--accent-blue);" class="realtime-spo2-val">--</div>
                         </div>
-                        <div class="watch-metric" style="flex:1;">
-                            <div class="watch-unit">가속도</div>
-                            <div style="font-weight:bold; font-size:1.1rem; color:var(--text-light);">1.1G</div>
+                        <div style="flex:1; background:rgba(255,255,255,0.05); padding:8px; border-radius:12px;">
+                            <div style="font-size:0.65rem; color:var(--text-gray);">가속도</div>
+                            <div style="font-weight:bold; font-size:1rem;">1.1G</div>
                         </div>
                     </div>
 
@@ -482,7 +457,7 @@
     </div>
 
     <script>
-        // 1. 디바이스 화면 전환 스위치 (폰 <-> 워치)
+        // 1. 디바이스 화면 전환
         function switchDeviceView(device) {
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.device-view').forEach(v => v.classList.remove('active'));
@@ -522,13 +497,13 @@
             document.getElementById('spo2-threshold-display').innerText = appSettings.spo2Threshold + '%';
         }
 
-        // 3. 실시간 워치 데이터 연동 시뮬레이션
-        let lastReceivedData = { stress: 62, spo2: 97 };
+        // 3. 워치 실시간 연동 시뮬레이션
+        let lastReceivedData = { stress: 60, spo2: 97 };
         let isVestActivating = false;
 
         function startWatchSimulation() {
             setInterval(() => {
-                let currentStress = Math.floor(Math.random() * (68 - 56) + 56);
+                let currentStress = Math.floor(Math.random() * (68 - 55) + 55);
                 let currentSpo2 = Math.floor(Math.random() * (99 - 96) + 96);
 
                 if (Math.random() < 0.12) {
@@ -588,6 +563,24 @@
             desc.innerText = "정상 측정 중";
         }
 
+        // 3번 기능: 상황 메모 추가 기능
+        function addMemo() {
+            const input = document.getElementById('memoInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+            const memoList = document.getElementById('memoList');
+            const newItem = document.createElement('div');
+            newItem.className = 'memo-item';
+            newItem.innerHTML = `<span style="color:var(--accent-blue); font-weight:bold;">${timeStr}</span> - ${text}`;
+            
+            memoList.prepend(newItem);
+            input.value = '';
+        }
+
         // 4. 모바일 네비게이션 제어
         function changePage(pageName) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -598,7 +591,10 @@
             const navMap = { 'home': 0, 'history': 1, 'solution': 2, 'settings': 3 };
             document.querySelectorAll('.nav-item')[navMap[pageName]].classList.add('active');
 
-            if (pageName === 'history') renderChart();
+            if (pageName === 'history') {
+                renderMainChart();
+                renderWeeklyMiniChart();
+            }
         }
 
         function updateClock() {
@@ -613,12 +609,14 @@
         loadSettings();
         startWatchSimulation();
 
-        // 5. 차트 그려주기
-        let historyChart = null;
-        function renderChart() {
-            if (historyChart) historyChart.destroy();
+        // 5. 차트 렌더링
+        let mainChart = null;
+        let miniChart = null;
+
+        function renderMainChart() {
+            if (mainChart) mainChart.destroy();
             const ctx = document.getElementById('appHistoryChart').getContext('2d');
-            historyChart = new Chart(ctx, {
+            mainChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['13:00', '13:20', '13:40', '14:00', '14:20'],
@@ -632,8 +630,34 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { ticks: { color: '#64748b', font: {size: 9} } },
-                        y: { ticks: { color: '#64748b', font: {size: 9} } }
+                        x: { ticks: { color: '#64748b', font: {size: 8} } },
+                        y: { ticks: { color: '#64748b', font: {size: 8} } }
+                    }
+                }
+            });
+        }
+
+        // 2번 기능: 주간 미니 막대 차트
+        function renderWeeklyMiniChart() {
+            if (miniChart) miniChart.destroy();
+            const ctx = document.getElementById('weeklyMiniChart').getContext('2d');
+            miniChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['월', '화', '수', '목', '금', '토', '일'],
+                    datasets: [{
+                        data: [1, 0, 2, 1, 2, 0, 0],
+                        backgroundColor: '#38bdf8',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#64748b', font: {size: 8} }, grid: { display: false } },
+                        y: { display: false }
                     }
                 }
             });
