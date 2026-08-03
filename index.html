@@ -8,6 +8,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Leaflet.js (키 없이 무료로 사용하는 지도 라이브러리) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -108,7 +112,7 @@
             background-color: #1a202c;
             border-bottom-left-radius: 12px;
             border-bottom-right-radius: 12px;
-            z-index: 100;
+            z-index: 1000;
         }
 
         /* 2. 스마트워치 프레임 */
@@ -127,7 +131,7 @@
             height: var(--safe-area-top);
             padding: 0 25px;
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.75rem; font-weight: 600; z-index: 90;
+            font-size: 0.75rem; font-weight: 600; z-index: 900;
         }
 
         .app-content {
@@ -165,11 +169,11 @@
 
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
-        /* 위치 정보 카드 스타일 */
+        /* 실제 지도 스타일 */
         .location-card {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .location-header {
             display: flex;
@@ -192,13 +196,23 @@
             border-radius: 10px;
             font-weight: 600;
         }
+        
+        /* 실제 지도 렌더링 영역 */
+        #map {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
         .location-body {
             font-size: 0.75rem;
             color: var(--text-gray);
             line-height: 1.4;
             background: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 10px;
+            padding: 8px 10px;
+            border-radius: 8px;
             border: 1px solid rgba(255,255,255,0.05);
         }
 
@@ -240,7 +254,7 @@
             border-top: 1px solid #2d3a52;
             display: flex; justify-content: space-around;
             padding-top: 8px; padding-bottom: var(--safe-area-bottom);
-            z-index: 100;
+            z-index: 1000;
         }
 
         .nav-item {
@@ -317,31 +331,34 @@
                             <div class="vest-status-badge status-idle" id="vest-badge">대기 중</div>
                         </div>
 
-                        <!-- [추가됨] 3번 기능: 실시간 위치 및 안전 구역 정보 -->
+                        <!-- [실제 지도 연동] 실시간 위치 및 안전 구역 -->
                         <div class="card location-card">
                             <div class="location-header">
                                 <div class="location-title">
                                     <span class="material-icons" style="color:var(--accent-blue); font-size:1.1rem;">my_location</span>
-                                    <span>실시간 위치 & 안전 구역</span>
+                                    <span>실시간 위치 및 안전 구역</span>
                                 </div>
-                                <span class="gps-badge">GPS 수신 중</span>
+                                <span class="gps-badge" id="gps-status-text">GPS 연결 중...</span>
                             </div>
+                            
+                            <!-- 지도 렌더링 엘리먼트 -->
+                            <div id="map"></div>
+
                             <div class="location-body">
-                                📍 <strong>현재 위치:</strong> 서울시 마포구 월드컵북로 (특수학급 교실 근처)<br>
-                                🛡️ <strong>안전 구역(지오펜스):</strong> <span style="color:var(--accent-green); font-weight:bold;">정상 범위 내 위치</span>
+                                📍 <strong>위도/경도:</strong> <span id="coords-text">위치 측정 중...</span><br>
+                                🛡️ <strong>안전 구역:</strong> <span style="color:var(--accent-green); font-weight:bold;">지오펜스 반경 500m 내</span>
                             </div>
                         </div>
 
                     </div>
 
-                    <!-- TAB 2: 기록 (그래프 + 주간 요약 + 보호자 메모) -->
+                    <!-- TAB 2: 기록 -->
                     <div id="page-history" class="page">
                         <div class="page-header">
                             <h1>기록 및 통계</h1>
                             <p>실시간 그래프 및 작동 내역 관리</p>
                         </div>
                         
-                        <!-- 메인 바이오 그래프 -->
                         <div class="card">
                             <div class="status-label" style="margin-bottom:6px;">실시간 스트레스/산소 추이</div>
                             <div class="chart-container">
@@ -349,7 +366,6 @@
                             </div>
                         </div>
 
-                        <!-- 주간 가동 통계 요약 -->
                         <div class="card">
                             <div class="status-label">주간 조끼 가동 요약 (최근 7일)</div>
                             <div class="weekly-summary-grid">
@@ -371,7 +387,6 @@
                             </div>
                         </div>
 
-                        <!-- 보호자 상황 메모 일기 -->
                         <div class="card">
                             <div class="status-label">작동 당시 상황 메모 (보호자 작성)</div>
                             <div class="memo-input-box">
@@ -393,7 +408,6 @@
                             <p>생체 데이터 기반 맞춤 케어</p>
                         </div>
 
-                        <!-- 시간대별 위험 패턴 분석 -->
                         <div class="card time-pattern-card">
                             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
                                 <span class="material-icons" style="color:var(--accent-purple); font-size:1.1rem;">schedule</span>
@@ -404,7 +418,6 @@
                             </div>
                         </div>
 
-                        <!-- 맞춤형 가이드 -->
                         <div class="card">
                             <div style="font-size:0.8rem; font-weight:bold; margin-bottom:10px;">자폐인을 위한 추천 조치</div>
                             <div style="display:flex; flex-direction:column; gap:10px;">
@@ -520,7 +533,64 @@
             }
         }
 
-        // 2. 설정 로직
+        // 2. 실제 위치 측정 및 Leaflet 지도 초기화
+        let map = null;
+        let userMarker = null;
+        let safetyCircle = null;
+
+        function initRealMap() {
+            // 기본 초기 좌표 (서울시청)
+            const defaultLat = 37.5665;
+            const defaultLng = 126.9780;
+
+            map = L.map('map').setView([defaultLat, defaultLng], 15);
+
+            // OpenStreetMap 타일 레이어 추가 (API 키 불필요)
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // 브라우저 실제 위치 조회
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+
+                        // 지도 중심 이동
+                        map.setView([lat, lng], 16);
+
+                        // 사용자 마커 표시
+                        userMarker = L.marker([lat, lng]).addTo(map)
+                            .bindPopup('<b>현재 착용자 위치</b>').openPopup();
+
+                        // 반경 500m 안전 구역 표시
+                        safetyCircle = L.circle([lat, lng], {
+                            color: '#38bdf8',
+                            fillColor: '#38bdf8',
+                            fillOpacity: 0.15,
+                            radius: 500
+                        }).addTo(map);
+
+                        document.getElementById('gps-status-text').innerText = "GPS 측정 완료";
+                        document.getElementById('coords-text').innerText = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                    },
+                    (error) => {
+                        console.warn("위치 정보 접근 실패:", error.message);
+                        document.getElementById('gps-status-text').innerText = "기본 위치 적용";
+                        document.getElementById('coords-text').innerText = "37.5665, 126.9780 (기본)";
+                        
+                        userMarker = L.marker([defaultLat, defaultLng]).addTo(map);
+                    },
+                    { enableHighAccuracy: true }
+                );
+            } else {
+                document.getElementById('gps-status-text').innerText = "GPS 미지원";
+            }
+        }
+
+        // 3. 설정 및 시뮬레이션 로직
         let appSettings = { stressThreshold: 75, spo2Threshold: 93 };
 
         function loadSettings() {
@@ -546,7 +616,6 @@
             document.getElementById('spo2-threshold-display').innerText = appSettings.spo2Threshold + '%';
         }
 
-        // 3. 워치 실시간 연동 시뮬레이션
         let lastReceivedData = { stress: 60, spo2: 97 };
         let isVestActivating = false;
 
@@ -612,7 +681,6 @@
             desc.innerText = "정상 측정 중";
         }
 
-        // 상황 메모 추가 기능
         function addMemo() {
             const input = document.getElementById('memoInput');
             const text = input.value.trim();
@@ -630,7 +698,6 @@
             input.value = '';
         }
 
-        // 4. 모바일 네비게이션 제어
         function changePage(pageName) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + pageName).classList.add('active');
@@ -643,6 +710,8 @@
             if (pageName === 'history') {
                 renderMainChart();
                 renderWeeklyMiniChart();
+            } else if (pageName === 'home' && map) {
+                setTimeout(() => map.invalidateSize(), 100);
             }
         }
 
@@ -655,10 +724,14 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        loadSettings();
-        startWatchSimulation();
+        // 초기화 실행
+        window.onload = () => {
+            loadSettings();
+            startWatchSimulation();
+            initRealMap();
+        };
 
-        // 5. 차트 렌더링
+        // 4. 차트 렌더링
         let mainChart = null;
         let miniChart = null;
 
