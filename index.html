@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>토다기 (TODAGI) - 자동 압박·진동 스마트 조끼</title>
+    <!-- Chart.js 라이브러리 불러오기 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-orange: #fb923c;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent-blue);
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+        }
+
+        /* 메인 그리드 컨테이너: 스마트 워치 & 모바일 디바이스 */
+        .dashboard-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* 디바이스 공통 프레임 */
+        .device-frame {
+            background-color: var(--card-bg);
+            border: 2px solid #334155;
+            border-radius: 30px;
+            padding: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 1. 스마트 워치 UI 영역 */
+        .watch-ui {
+            width: 320px;
+            border-radius: 40px;
+            border: 4px solid #475569;
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            text-align: center;
+        }
+
+        .watch-header {
+            font-size: 0.85rem;
+            color: var(--accent-blue);
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .sensor-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .sensor-title {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+        }
+
+        .sensor-value {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-top: 4px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            background-color: rgba(74, 222, 128, 0.2);
+            color: var(--accent-green);
+        }
+
+        /* 2. 모바일 UI 영역 */
+        .mobile-ui {
+            width: 380px;
+            border-radius: 40px;
+            border: 6px solid #334155;
+        }
+
+        .mobile-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 12px;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .setting-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .setting-item label {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+        }
+
+        /* 3. 데이터 분석 및 관리 가이드 영역 */
+        .analytics-section {
+            max-width: 1100px;
+            width: 100%;
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .full-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #334155;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: var(--accent-blue);
+        }
+
+        /* Guide / Solution List */
+        .guide-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .guide-item {
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .guide-item.warning {
+            border-left-color: var(--accent-orange);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .mobile-ui, .watch-ui {
+                width: 100%;
+                max-width: 360px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>토다기 (TODAGI)</h1>
+        <p>자폐 스펙트럼 장애인을 위한 생체신호 기반 자동 압박·진동 조끼 제어 시스템</p>
+    </header>
+
+    <div class="dashboard-container">
+        
+        <!-- 왼쪽: 스마트 워치 UI -->
+        <div class="device-frame watch-ui">
+            <div class="watch-header">⌚ SMART WATCH UI</div>
+            
+            <div class="sensor-card">
+                <div class="sensor-title">실시간 스트레스 지수</div>
+                <div class="sensor-value" id="watch-stress" style="color: var(--accent-orange);">72</div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-title">혈중 산소 농도 (SpO2)</div>
+                <div class="sensor-value" id="watch-spo2" style="color: var(--accent-blue);">97%</div>
+            </div>
+
+            <div class="sensor-card">
+                <div class="sensor-title">가속도 (움직임 변화)</div>
+                <div class="sensor-value" id="watch-acc">1.2G</div>
+            </div>
+
+            <div>
+                <div class="sensor-title" style="margin-bottom: 6px;">스마트 조끼 상태</div>
+                <div class="status-badge" id="vest-status">대기 중 (정상)</div>
+            </div>
+        </div>
+
+        <!-- 오른쪽: 모바일 UI (임계값 설정) -->
+        <div class="device-frame mobile-ui">
+            <div class="mobile-header">📱 토다기 모바일 앱</div>
+            
+            <div class="setting-group">
+                <div style="font-size: 0.9rem; font-weight: bold; color: var(--accent-blue);">조끼 자동 작동 임계값 설정</div>
+                
+                <div class="setting-item">
+                    <label>
+                        <span>스트레스 지수 기준</span>
+                        <span id="stress-threshold-val">75 이상</span>
+                    </label>
+                    <input type="range" id="stress-slider" min="50" max="100" value="75" oninput="updateSettings()">
+                </div>
+
+                <div class="setting-item">
+                    <label>
+                        <span>최저 혈중 산소 농도 기준</span>
+                        <span id="spo2-threshold-val">93% 이하</span>
+                    </label>
+                    <input type="range" id="spo2-slider" min="85" max="98" value="93" oninput="updateSettings()">
+                </div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-gray); background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                💡 설정된 임계값을 초과하면 토다기 스마트 조끼가 자동으로 에어 압박 및 진동 모드를 가동합니다.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 하단: 데이터 그래프 & 스트레스 관리 리포트 -->
+    <div class="analytics-section">
+        
+        <!-- 작동 및 생체신호 기록 그래프 -->
+        <div class="full-card">
+            <div class="card-title">📊 생체신호 추이 및 조끼 작동 기록 (몇 월 몇 시)</div>
+            <canvas id="historyChart" height="100"></canvas>
+        </div>
+
+        <!-- 스트레스 관리 솔루션 -->
+        <div class="full-card">
+            <div class="card-title">💡 자폐인을 위한 맞춤형 스트레스 관리 가이드</div>
+            <ul class="guide-list">
+                <li class="guide-item warning">
+                    <strong>[14:20 작동 패턴 분석]</strong> 급격한 가속도 변화와 스트레스 지수 상승이 감지되었습니다. 외부 소음이나 갑작스러운 환경 변화가 원인일 수 있으므로 <strong>청각 차단 헤드폰</strong> 착용을 권장합니다.
+                </li>
+                <li class="guide-item">
+                    <strong>[압박 자극 효과]</strong> 최근 3회 조끼 작동 시, 에어 압박 시작 후 average 3분 이내에 스트레스 수치가 안정 상태(60 이하)로 회복되었습니다.
+                </li>
+                <li class="guide-item">
+                    <strong>[맞춤 제안]</strong> 오후 2시~4시 사이에 스트레스 자극이 자주 발생합니다. 해당 시간대에는 조용한 휴식 공간을 미리 확보해주세요.
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // 슬라이더 값 업데이트 함수
+        function updateSettings() {
+            const stressVal = document.getElementById('stress-slider').value;
+            const spo2Val = document.getElementById('spo2-slider').value;
+            
+            document.getElementById('stress-threshold-val').innerText = stressVal + ' 이상';
+            document.getElementById('spo2-threshold-val').innerText = spo2Val + '% 이하';
+        }
+
+        // Chart.js 그래프 생성
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        const historyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '11:00', '12:00', '13:00', '14:00', '14:20 (작동)', '15:00', '16:00'],
+                datasets: [
+                    {
+                        label: '스트레스 지수',
+                        data: [45, 50, 48, 52, 60, 82, 55, 48],
+                        borderColor: '#fb923c',
+                        backgroundColor: 'rgba(251, 146, 60, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '혈중 산소 농도 (%)',
+                        data: [98, 98, 97, 97, 96, 91, 97, 98],
+                        borderColor: '#38bdf8',
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: { color: '#f8fafc' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: '#334155' }
+                    },
+                    y: {
+                        ticks: { color: '#94a3b8' },
+                        grid: { color: '#334155' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
