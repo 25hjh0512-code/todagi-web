@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Google Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Leaflet.js (키 없이 무료로 사용하는 지도 라이브러리) -->
+    <!-- Leaflet.js (무료 오픈소스 지도) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -169,79 +169,33 @@
 
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
-        /* 실제 지도 스타일 */
-        .location-card {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .location-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .location-title {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            color: var(--text-light);
-        }
-        .gps-badge {
-            font-size: 0.65rem;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-blue);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
+        /* 지도 스타일 */
+        .location-card { display: flex; flex-direction: column; gap: 10px; }
+        .location-header { display: flex; align-items: center; justify-content: space-between; }
+        .location-title { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: bold; color: var(--text-light); }
+        .gps-badge { font-size: 0.65rem; background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); padding: 2px 8px; border-radius: 10px; font-weight: 600; }
         
-        /* 실제 지도 렌더링 영역 */
-        #map {
-            width: 100%;
-            height: 150px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 1;
-        }
+        #map { width: 100%; height: 140px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); z-index: 1; }
+        .location-body { font-size: 0.75rem; color: var(--text-gray); line-height: 1.4; background: rgba(0,0,0,0.2); padding: 8px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
 
-        .location-body {
-            font-size: 0.75rem;
-            color: var(--text-gray);
-            line-height: 1.4;
-            background: rgba(0,0,0,0.2);
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        /* 주간 요약 수치 */
+        /* 주간 요약 */
         .weekly-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; text-align: center; }
         .weekly-num { font-size: 1.1rem; font-weight: bold; color: var(--accent-blue); }
         .weekly-text { font-size: 0.65rem; color: var(--text-gray); }
 
-        /* 메모 입력란 */
+        /* 메모 입력 */
         .memo-input-box { display: flex; gap: 6px; margin-top: 10px; }
-        .memo-input {
-            flex: 1; background: rgba(0,0,0,0.2); border: 1px solid #334155;
-            border-radius: 8px; padding: 8px; color: white; font-size: 0.75rem;
-        }
-        .memo-btn {
-            background: var(--accent-blue); border: none; border-radius: 8px;
-            padding: 0 12px; color: #0f172a; font-weight: bold; font-size: 0.75rem; cursor: pointer;
-        }
+        .memo-input { flex: 1; background: rgba(0,0,0,0.2); border: 1px solid #334155; border-radius: 8px; padding: 8px; color: white; font-size: 0.75rem; }
+        .memo-btn { background: var(--accent-blue); border: none; border-radius: 8px; padding: 0 12px; color: #0f172a; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
         .memo-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
         .memo-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; font-size: 0.75rem; line-height: 1.3; }
 
         /* 시간대별 위험 통계 */
-        .time-pattern-card {
-            background: linear-gradient(135deg, rgba(192, 132, 252, 0.1), rgba(30, 41, 59, 1));
-            border-left: 4px solid var(--accent-purple);
-        }
+        .time-pattern-card { background: linear-gradient(135deg, rgba(192, 132, 252, 0.1), rgba(30, 41, 59, 1)); border-left: 4px solid var(--accent-purple); }
 
         /* 설정 슬라이더 */
         .setting-item { margin-bottom: 12px; }
+        .setting-item:last-child { margin-bottom: 0; }
         .setting-label { font-size: 0.8rem; color: var(--text-gray); display: flex; justify-content: space-between; margin-bottom: 4px; }
         .threshold-val { color: var(--accent-blue); font-weight: bold; }
         input[type="range"] { width: 100%; accent-color: var(--accent-blue); height: 5px; }
@@ -257,10 +211,7 @@
             z-index: 1000;
         }
 
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            color: var(--text-gray); font-size: 0.65rem; font-weight: 600; cursor: pointer;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-gray); font-size: 0.65rem; font-weight: 600; cursor: pointer; }
         .nav-item .material-icons { font-size: 1.3rem; margin-bottom: 2px; }
         .nav-item.active { color: var(--accent-blue); }
 
@@ -270,7 +221,7 @@
 </head>
 <body>
 
-    <!-- 디바이스 화면 선택 탭 -->
+    <!-- 디바이스 전환 버튼 -->
     <div class="device-selector">
         <button class="device-btn active" onclick="switchDeviceView('phone')">
             <span class="material-icons">smartphone</span>
@@ -308,7 +259,6 @@
                             <p>실시간 바이오 신호 및 상태</p>
                         </div>
 
-                        <!-- 생체 센서 수치 -->
                         <div class="card status-grid">
                             <div class="status-item">
                                 <div class="status-label">스트레스 지수</div>
@@ -322,7 +272,6 @@
                             </div>
                         </div>
 
-                        <!-- 조끼 가동 상태 -->
                         <div class="card vest-status-card">
                             <div>
                                 <div class="status-label">토다기 조끼 상태</div>
@@ -331,7 +280,6 @@
                             <div class="vest-status-badge status-idle" id="vest-badge">대기 중</div>
                         </div>
 
-                        <!-- [실제 지도 연동] 실시간 위치 및 안전 구역 -->
                         <div class="card location-card">
                             <div class="location-header">
                                 <div class="location-title">
@@ -341,7 +289,6 @@
                                 <span class="gps-badge" id="gps-status-text">GPS 연결 중...</span>
                             </div>
                             
-                            <!-- 지도 렌더링 엘리먼트 -->
                             <div id="map"></div>
 
                             <div class="location-body">
@@ -349,7 +296,6 @@
                                 🛡️ <strong>안전 구역:</strong> <span style="color:var(--accent-green); font-weight:bold;">지오펜스 반경 500m 내</span>
                             </div>
                         </div>
-
                     </div>
 
                     <!-- TAB 2: 기록 -->
@@ -401,13 +347,38 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: 분석 및 솔루션 -->
-                    <div id="page-solution" class="page">
+                    <!-- TAB 3: [통합됨] 분석 및 설정 -->
+                    <div id="page-analysis-settings" class="page">
                         <div class="page-header">
-                            <h1>패턴 분석 & 솔루션</h1>
-                            <p>생체 데이터 기반 맞춤 케어</p>
+                            <h1>분석 및 설정</h1>
+                            <p>패턴 분석과 조끼 가동 수치 제어</p>
                         </div>
 
+                        <!-- 1. 임계값 설정 섹션 -->
+                        <div class="card">
+                            <div style="font-size:0.85rem; font-weight:bold; margin-bottom:12px; color:var(--accent-blue); display:flex; align-items:center; gap:6px;">
+                                <span class="material-icons" style="font-size:1.1rem;">tune</span>
+                                <span>자동 가동 임계 수치 설정</span>
+                            </div>
+
+                            <div class="setting-item">
+                                <div class="setting-label">
+                                    <span>스트레스 지수 (이상 가동)</span>
+                                    <span class="threshold-val" id="stress-threshold-display">75</span>
+                                </div>
+                                <input type="range" id="stress-slider" min="50" max="95" value="75" oninput="saveSettings()">
+                            </div>
+
+                            <div class="setting-item" style="margin-top:10px;">
+                                <div class="setting-label">
+                                    <span>혈중 산소 농도 (이하 가동)</span>
+                                    <span class="threshold-val" id="spo2-threshold-display">93%</span>
+                                </div>
+                                <input type="range" id="spo2-slider" min="85" max="98" value="93" oninput="saveSettings()">
+                            </div>
+                        </div>
+
+                        <!-- 2. 시간대별 위험 패턴 분석 카드 -->
                         <div class="card time-pattern-card">
                             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
                                 <span class="material-icons" style="color:var(--accent-purple); font-size:1.1rem;">schedule</span>
@@ -418,6 +389,7 @@
                             </div>
                         </div>
 
+                        <!-- 3. 추천 케어 솔루션 -->
                         <div class="card">
                             <div style="font-size:0.8rem; font-weight:bold; margin-bottom:10px;">자폐인을 위한 추천 조치</div>
                             <div style="display:flex; flex-direction:column; gap:10px;">
@@ -435,37 +407,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- TAB 4: 자동 가동 설정 -->
-                    <div id="page-settings" class="page">
-                        <div class="page-header">
-                            <h1>자동 가동 설정</h1>
-                            <p>조끼 반응 임계 수치 제어</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <span>스트레스 지수 (이상 가동)</span>
-                                    <span class="threshold-val" id="stress-threshold-display">75</span>
-                                </div>
-                                <input type="range" id="stress-slider" min="50" max="95" value="75" oninput="saveSettings()">
-                            </div>
-
-                            <div class="setting-item">
-                                <div class="setting-label">
-                                    <span>혈중 산소 농도 (이하 가동)</span>
-                                    <span class="threshold-val" id="spo2-threshold-display">93%</span>
-                                </div>
-                                <input type="range" id="spo2-slider" min="85" max="98" value="93" oninput="saveSettings()">
-                            </div>
-                        </div>
                     </div>
 
                 </div>
 
-                <!-- 하단 네비게이션 -->
+                <!-- 하단 네비게이션 (3개로 정리됨) -->
                 <div class="app-navbar">
                     <div class="nav-item active" onclick="changePage('home')">
                         <span class="material-icons">sensors</span>
@@ -475,13 +422,9 @@
                         <span class="material-icons">equalizer</span>
                         <span>기록</span>
                     </div>
-                    <div class="nav-item" onclick="changePage('solution')">
-                        <span class="material-icons">insights</span>
-                        <span>분석</span>
-                    </div>
-                    <div class="nav-item" onclick="changePage('settings')">
+                    <div class="nav-item" onclick="changePage('analysis-settings')">
                         <span class="material-icons">tune</span>
-                        <span>설정</span>
+                        <span>분석/설정</span>
                     </div>
                 </div>
             </div>
@@ -519,7 +462,7 @@
     </div>
 
     <script>
-        // 1. 디바이스 화면 전환
+        // 1. 디바이스 전환
         function switchDeviceView(device) {
             document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.device-view').forEach(v => v.classList.remove('active'));
@@ -533,39 +476,33 @@
             }
         }
 
-        // 2. 실제 위치 측정 및 Leaflet 지도 초기화
+        // 2. 실제 위치 및 지도 초기화
         let map = null;
         let userMarker = null;
         let safetyCircle = null;
 
         function initRealMap() {
-            // 기본 초기 좌표 (서울시청)
             const defaultLat = 37.5665;
             const defaultLng = 126.9780;
 
             map = L.map('map').setView([defaultLat, defaultLng], 15);
 
-            // OpenStreetMap 타일 레이어 추가 (API 키 불필요)
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            // 브라우저 실제 위치 조회
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
 
-                        // 지도 중심 이동
                         map.setView([lat, lng], 16);
 
-                        // 사용자 마커 표시
                         userMarker = L.marker([lat, lng]).addTo(map)
                             .bindPopup('<b>현재 착용자 위치</b>').openPopup();
 
-                        // 반경 500m 안전 구역 표시
                         safetyCircle = L.circle([lat, lng], {
                             color: '#38bdf8',
                             fillColor: '#38bdf8',
@@ -573,14 +510,13 @@
                             radius: 500
                         }).addTo(map);
 
-                        document.getElementById('gps-status-text').innerText = "GPS 측정 완료";
+                        document.getElementById('gps-status-text').innerText = "GPS 수신 완료";
                         document.getElementById('coords-text').innerText = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
                     },
                     (error) => {
-                        console.warn("위치 정보 접근 실패:", error.message);
-                        document.getElementById('gps-status-text').innerText = "기본 위치 적용";
+                        console.warn("위치 조회 실패:", error.message);
+                        document.getElementById('gps-status-text').innerText = "기본 위치 사용";
                         document.getElementById('coords-text').innerText = "37.5665, 126.9780 (기본)";
-                        
                         userMarker = L.marker([defaultLat, defaultLng]).addTo(map);
                     },
                     { enableHighAccuracy: true }
@@ -590,7 +526,7 @@
             }
         }
 
-        // 3. 설정 및 시뮬레이션 로직
+        // 3. 설정 & 수치 업데이트
         let appSettings = { stressThreshold: 75, spo2Threshold: 93 };
 
         function loadSettings() {
@@ -698,13 +634,14 @@
             input.value = '';
         }
 
+        // 페이지 전환 (3개 탭으로 변경)
         function changePage(pageName) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('page-' + pageName).classList.add('active');
 
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             
-            const navMap = { 'home': 0, 'history': 1, 'solution': 2, 'settings': 3 };
+            const navMap = { 'home': 0, 'history': 1, 'analysis-settings': 2 };
             document.querySelectorAll('.nav-item')[navMap[pageName]].classList.add('active');
 
             if (pageName === 'history') {
@@ -724,7 +661,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 초기화 실행
         window.onload = () => {
             loadSettings();
             startWatchSimulation();
