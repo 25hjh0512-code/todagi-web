@@ -165,15 +165,50 @@
 
         @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
-        /* 주간 요약 수치 (2번 기능) */
+        /* 위치 정보 카드 스타일 */
+        .location-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .location-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .location-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--text-light);
+        }
+        .gps-badge {
+            font-size: 0.65rem;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .location-body {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            line-height: 1.4;
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 주간 요약 수치 */
         .weekly-summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; text-align: center; }
         .weekly-num { font-size: 1.1rem; font-weight: bold; color: var(--accent-blue); }
         .weekly-text { font-size: 0.65rem; color: var(--text-gray); }
 
-        /* 메모 입력란 (3번 기능) */
-        .memo-input-box {
-            display: flex; gap: 6px; margin-top: 10px;
-        }
+        /* 메모 입력란 */
+        .memo-input-box { display: flex; gap: 6px; margin-top: 10px; }
         .memo-input {
             flex: 1; background: rgba(0,0,0,0.2); border: 1px solid #334155;
             border-radius: 8px; padding: 8px; color: white; font-size: 0.75rem;
@@ -185,7 +220,7 @@
         .memo-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
         .memo-item { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; font-size: 0.75rem; line-height: 1.3; }
 
-        /* 시간대별 위험 통계 (1번 기능) */
+        /* 시간대별 위험 통계 */
         .time-pattern-card {
             background: linear-gradient(135deg, rgba(192, 132, 252, 0.1), rgba(30, 41, 59, 1));
             border-left: 4px solid var(--accent-purple);
@@ -259,6 +294,7 @@
                             <p>실시간 바이오 신호 및 상태</p>
                         </div>
 
+                        <!-- 생체 센서 수치 -->
                         <div class="card status-grid">
                             <div class="status-item">
                                 <div class="status-label">스트레스 지수</div>
@@ -272,6 +308,7 @@
                             </div>
                         </div>
 
+                        <!-- 조끼 가동 상태 -->
                         <div class="card vest-status-card">
                             <div>
                                 <div class="status-label">토다기 조끼 상태</div>
@@ -280,12 +317,24 @@
                             <div class="vest-status-badge status-idle" id="vest-badge">대기 중</div>
                         </div>
 
-                        <div style="font-size: 0.75rem; color: var(--text-gray); text-align:center; margin-top:15px; line-height: 1.4;">
-                            스마트워치 센서 수치가 설정된 임계값을 넘으면 조끼가 자동으로 작동합니다.
+                        <!-- [추가됨] 3번 기능: 실시간 위치 및 안전 구역 정보 -->
+                        <div class="card location-card">
+                            <div class="location-header">
+                                <div class="location-title">
+                                    <span class="material-icons" style="color:var(--accent-blue); font-size:1.1rem;">my_location</span>
+                                    <span>실시간 위치 & 안전 구역</span>
+                                </div>
+                                <span class="gps-badge">GPS 수신 중</span>
+                            </div>
+                            <div class="location-body">
+                                📍 <strong>현재 위치:</strong> 서울시 마포구 월드컵북로 (특수학급 교실 근처)<br>
+                                🛡️ <strong>안전 구역(지오펜스):</strong> <span style="color:var(--accent-green); font-weight:bold;">정상 범위 내 위치</span>
+                            </div>
                         </div>
+
                     </div>
 
-                    <!-- TAB 2: 기록 (그래프 + 2번 주간 요약 + 3번 보호자 메모) -->
+                    <!-- TAB 2: 기록 (그래프 + 주간 요약 + 보호자 메모) -->
                     <div id="page-history" class="page">
                         <div class="page-header">
                             <h1>기록 및 통계</h1>
@@ -300,7 +349,7 @@
                             </div>
                         </div>
 
-                        <!-- 2번 기능: 주간 가동 통계 요약 -->
+                        <!-- 주간 가동 통계 요약 -->
                         <div class="card">
                             <div class="status-label">주간 조끼 가동 요약 (최근 7일)</div>
                             <div class="weekly-summary-grid">
@@ -322,7 +371,7 @@
                             </div>
                         </div>
 
-                        <!-- 3번 기능: 보호자 상황 메모 일기 -->
+                        <!-- 보호자 상황 메모 일기 -->
                         <div class="card">
                             <div class="status-label">작동 당시 상황 메모 (보호자 작성)</div>
                             <div class="memo-input-box">
@@ -337,14 +386,14 @@
                         </div>
                     </div>
 
-                    <!-- TAB 3: 분석 및 솔루션 (1번 기능 + 감각 가이드) -->
+                    <!-- TAB 3: 분석 및 솔루션 -->
                     <div id="page-solution" class="page">
                         <div class="page-header">
                             <h1>패턴 분석 & 솔루션</h1>
                             <p>생체 데이터 기반 맞춤 케어</p>
                         </div>
 
-                        <!-- 1번 기능: 시간대별 위험 패턴 분석 -->
+                        <!-- 시간대별 위험 패턴 분석 -->
                         <div class="card time-pattern-card">
                             <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
                                 <span class="material-icons" style="color:var(--accent-purple); font-size:1.1rem;">schedule</span>
@@ -563,7 +612,7 @@
             desc.innerText = "정상 측정 중";
         }
 
-        // 3번 기능: 상황 메모 추가 기능
+        // 상황 메모 추가 기능
         function addMemo() {
             const input = document.getElementById('memoInput');
             const text = input.value.trim();
@@ -637,7 +686,6 @@
             });
         }
 
-        // 2번 기능: 주간 미니 막대 차트
         function renderWeeklyMiniChart() {
             if (miniChart) miniChart.destroy();
             const ctx = document.getElementById('weeklyMiniChart').getContext('2d');
